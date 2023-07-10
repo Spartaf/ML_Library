@@ -52,9 +52,17 @@ class Regression(object):
         X = np.insert(X, 0, 1, axis=1)
         y_pred = X.dot(self.W)
         return R2_score(y, y_pred)
+    
+    def fit_curve(self):
+        plt.figure()
+        plt.plot(self.training_errors, 'r')
+        plt.title("Fit Curve")
+        plt.xlabel("Number of Iterations")
+        plt.ylabel("Cost")
+        plt.show()
 
 
-class LinearRegression(Regression):
+class Linear_Regression(Regression):
 
     def __init__(self, n_iterations = 100, learning_rate = 0.01, gradient_descent = True):
 
@@ -62,7 +70,7 @@ class LinearRegression(Regression):
 
         self.regularization = lambda x: 0
         self.regularization.gradient = lambda x: 0
-        super(LinearRegression, self).__init__(n_iterations= n_iterations, learning_rate=learning_rate)
+        super(Linear_Regression, self).__init__(n_iterations= n_iterations, learning_rate=learning_rate)
 
     
     def fit(self, X, y):
@@ -77,7 +85,7 @@ class LinearRegression(Regression):
             X_sq_reg_inv = V.dot(np.linalg.pinv(S)).dot(U.T)
             self.W = X_sq_reg_inv.dot(X.T).dot(y)
         else:
-            super(LinearRegression, self).fit(X, y)
+            super(Linear_Regression, self).fit(X, y)
 
 
 
@@ -92,17 +100,17 @@ class PolynomyaleRegression(Regression):
     
     def fit(self, X, y):
         print("Fitting the Polynomiale Regression model on the given dataset ...")
-        X = polynomiale_features(X, self.degree)
-        super(PolynomyaleRegression, self).fit(X, y)
+        X_new = polynomiale_features(X, self.degree)
+        super(PolynomyaleRegression, self).fit(X_new, y)
 
 
     def predict(self, X):
         X_new = polynomiale_features(X, self.degree)
-        return super().predict(X_new)
+        return super(PolynomyaleRegression, self).predict(X_new)
     
     def get_score(self, X, y):
         X_new = polynomiale_features(X, self.degree)
-        return super().get_score(X_new, y)
+        return super(PolynomyaleRegression, self).get_score(X_new, y)
 
 
 
@@ -210,13 +218,13 @@ class RidgeRegression(Regression):
 
 
 
-class ElasticNet(Regression):
+class Elastic_Net(Regression):
 
     def __init__(self, degree, alpha_reg, n_iterations = 100, learning_rate = 0.01):
 
         self.degree = degree
         self.regularization = l1_l2_regularization(alpha_reg)
-        super(ElasticNet, self).__init__(n_iterations= n_iterations, learning_rate= learning_rate)
+        super(Elastic_Net, self).__init__(n_iterations= n_iterations, learning_rate= learning_rate)
     
     def fit(self, X, y):
         print("Fitting the ElasticNet model on the given dataset ...")
@@ -225,17 +233,17 @@ class ElasticNet(Regression):
         X_poly = polynomiale_features(X, self.degree)
         self.scaler.fit(X_poly)
         X = self.scaler.transform(X_poly) # Scale par min max
-        super(ElasticNet, self).fit(X, y)
+        super(Elastic_Net, self).fit(X, y)
 
     def predict(self, X):
         X_poly = polynomiale_features(X, self.degree)
         X = self.scaler.transform(X_poly) # Re use the scaler alreary use and fit from the train_set
-        return super(ElasticNet, self).predict(X)
+        return super(Elastic_Net, self).predict(X)
 
     def get_score(self, X, y):
         X_poly = polynomiale_features(X, self.degree)
         X_new = self.scaler.transform(X_poly)
-        return super(ElasticNet, self).get_score(X_new, y)
+        return super(Elastic_Net, self).get_score(X_new, y)
 
 
 
